@@ -2,10 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:yaqoob_test_project/Pages/order_list_page/order_list_page.dart';
+import 'package:yaqoob_test_project/Models/login_model.dart';
+import 'package:yaqoob_test_project/Pages/auth/login/forgot_password/forgot_password.dart';
+import 'package:yaqoob_test_project/Pages/order/order_list_page/order_list_page.dart';
 import 'package:yaqoob_test_project/shared_service.dart';
-import '../../api/api_service.dart';
-import '../../const.dart';
+import '../../../api/api_service.dart';
+import '../../../const.dart';
+import '../register_page/register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   static TextEditingController firmname = TextEditingController();
   static TextEditingController username = TextEditingController();
   static TextEditingController password = TextEditingController();
+
   APIService? apiService;
   bool isloading = false;
   @override
@@ -27,19 +31,16 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  void dispose() {
+    firmname.dispose();
+    username.dispose();
+    password.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    print("build");
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        leading: const BackButton(),
-        actions: const [
-          // IconButton(
-          //   onPressed: () {},
-          //   icon: SvgPicture.asset("assets/images/us.svg"),
-          // ),
-        ],
-      ),
       body: ListView(
         physics: const BouncingScrollPhysics(),
         children: [
@@ -135,7 +136,11 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CupertinoButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const RegisterPage(),
+                    ));
+                  },
                   padding: EdgeInsets.zero,
                   child: const Text(
                     "Sign up",
@@ -147,7 +152,11 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 CupertinoButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const ForgotPassword(),
+                    ));
+                  },
                   padding: EdgeInsets.zero,
                   child: const Text(
                     "Forgot password?",
@@ -178,12 +187,13 @@ class _LoginPageState extends State<LoginPage> {
       });
       apiService!
           .login(
-        username: username.text.trim(),
-        password: password.text.trim(),
+        loginModel: LoginModel(
+          password: password.text.trim(),
+          userName: username.text.trim(),
+        ),
         firmname: firmname.text.trim(),
       )
           .then((value) {
-        print(value.data);
         setState(() {
           isloading = false;
         });
@@ -191,7 +201,6 @@ class _LoginPageState extends State<LoginPage> {
           Fluttertoast.showToast(msg: value.messages![0]);
         } else {
           SharedService.setLoginDetails(value);
-
           Fluttertoast.showToast(msg: "Login Successful");
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const OrderListPage(),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../../const.dart';
-import '../events/events_page.dart';
+import '../../../const.dart';
+import '../../events/events_page.dart';
 import 'tabs/booking_tab.dart';
 import 'tabs/order_tab.dart';
 

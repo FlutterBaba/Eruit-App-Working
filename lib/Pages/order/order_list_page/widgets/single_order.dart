@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:yaqoob_test_project/Pages/order_details/order_details.dart';
+import 'package:yaqoob_test_project/Pages/order/order_details/order_details.dart';
 import 'package:yaqoob_test_project/utils/hex_color.dart';
-import '../../../Models/get_order_model.dart';
-import '../../../const.dart';
+import '../../../../Models/get_order_model.dart';
+import '../../../../const.dart';
 
 class SingleOrder extends StatelessWidget {
   final Entities entities;

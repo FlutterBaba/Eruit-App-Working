@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yaqoob_test_project/Models/order_details_model.dart';
 
-import '../../../const.dart';
+import '../../../../const.dart';
 
 //   order details OrderDetailsEvents .... list
 

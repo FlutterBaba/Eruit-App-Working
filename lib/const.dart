@@ -5,6 +5,8 @@ const circleIconSvg = "assets/icons/circle_icon.svg";
 const logoSmallImagee = "assets/images/logo_small.png";
 const filterIconSvg = "assets/icons/filter_icon.svg";
 const orderImage = "assets/images/order_image.png";
+const splashImage = "assets/images/splash.png";
+const noImage = "assets/images/no_image.png";
 
 // App Colors
 const Color kwhiteColor = Colors.white;

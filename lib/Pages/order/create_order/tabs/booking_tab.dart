@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import '../../../const.dart';
+import '../../../../const.dart';
 
 class BookingTab extends StatelessWidget {
   const BookingTab({super.key});
