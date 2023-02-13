@@ -51,7 +51,7 @@ Future<void> changePassword(BuildContext context) async {
                       obscureText: oldpasswordobscureText,
                       controller: newPassword,
                       decoration: InputDecoration(
-                        hintText: "Old Password",
+                        hintText: "New Password",
                         suffixIcon: IconButton(
                           icon: oldpasswordobscureText
                               ? SvgPicture.asset("assets/icons/eye-off.svg")

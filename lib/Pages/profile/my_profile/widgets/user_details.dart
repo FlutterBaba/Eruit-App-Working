@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:yaqoob_test_project/Pages/auth/login/login_page.dart';
+import 'package:yaqoob_test_project/shared_service.dart';
 
 import '../../../../Models/profile_model.dart';
 import '../../../../const.dart';
 import 'change_password.dart';
+import 'delete_account.dart';
 
 class UserDetails extends StatelessWidget {
   final ProfileModel profileModel;
@@ -51,12 +54,17 @@ class UserDetails extends StatelessWidget {
                 title: const Text("Chnage Password"),
               ),
               ListTile(
-                onTap: () {},
+                onTap: () => deleteAccount(context),
                 leading: const Icon(Icons.delete_outline, color: kpColor),
                 title: const Text("Delete Account"),
               ),
               ListTile(
-                onTap: () {},
+                onTap: () async {
+                  SharedService.logout();
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const LoginPage(),
+                  ));
+                },
                 leading: const Icon(Icons.logout, color: kpColor),
                 title: const Text("Sign out"),
               ),

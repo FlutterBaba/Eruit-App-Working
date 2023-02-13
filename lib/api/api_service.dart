@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:yaqoob_test_project/Models/change_password_model.dart';
+import 'package:yaqoob_test_project/Models/delete_account_model.dart';
 import 'package:yaqoob_test_project/Models/forgot_password_model.dart';
 import 'package:yaqoob_test_project/Models/order_details_model.dart';
 import 'package:yaqoob_test_project/Models/profile_model.dart';
@@ -195,14 +196,35 @@ class APIService {
       {required ChangePasswordModel changePasswordModel}) async {
     String? token = await SharedService.getToken();
     String url = "$_baseUrl/AccountMob/ChangeUserPassword?firmName=meir_eruit";
-    final response = await http.post(Uri.parse(url),
-        headers: <String, String>{
-          "Content-Type": "application/json; charset=utf-8",
-          "Authorization": "Bearer $token",
-        },
-        body: jsonEncode(changePasswordModel.toJson()));
+    final response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        "Content-Type": "application/json; charset=utf-8",
+        "Authorization": "Bearer $token",
+      },
+      body: jsonEncode(changePasswordModel.toJson()),
+    );
     if (response.statusCode == 200 || response.statusCode == 400) {
       return ChangePasswordResponseModel.fromJson(
+          json.decode(response.body.toString()));
+    } else {
+      throw Exception('Failed to load data!');
+    }
+  }
+
+  // •	Deactivate User :
+  Future<DeleteAccountResponse> deactivateUser() async {
+    String? token = await SharedService.getToken();
+    String url = "$_baseUrl/AccountMob/DeactiveUser";
+    final response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        "Content-Type": "application/json; charset=utf-8",
+        "Authorization": "Bearer $token",
+      },
+    );
+    if (response.statusCode == 200 || response.statusCode == 400) {
+      return DeleteAccountResponse.fromJson(
           json.decode(response.body.toString()));
     } else {
       throw Exception('Failed to load data!');

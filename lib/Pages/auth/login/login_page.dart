@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:yaqoob_test_project/Models/login_model.dart';
 import 'package:yaqoob_test_project/Pages/auth/login/forgot_password/forgot_password.dart';
-import 'package:yaqoob_test_project/Pages/order/order_list_page/order_list_page.dart';
+import 'package:yaqoob_test_project/Pages/bottom_bar/bottom_bar.dart';
 import 'package:yaqoob_test_project/shared_service.dart';
 import '../../../api/api_service.dart';
 import '../../../const.dart';
@@ -203,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
           SharedService.setLoginDetails(value);
           Fluttertoast.showToast(msg: "Login Successful");
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => const OrderListPage(),
+            builder: (context) => const BottomBar(),
           ));
         }
       });
