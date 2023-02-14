@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:yaqoob_test_project/Models/profile_model.dart';
 import 'package:yaqoob_test_project/api/api_service.dart';
@@ -18,7 +20,17 @@ class _MyProfileState extends State<MyProfile> {
   @override
   void initState() {
     apiService = APIService();
+    Timer.periodic(const Duration(seconds: 3), (timer) {
+      apiService!.getUserProfileDetails();
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // stop streaming when app close
+    apiService!.streamController.close();
+    super.dispose();
   }
 
   @override
@@ -30,7 +42,7 @@ class _MyProfileState extends State<MyProfile> {
         title: const Text("User Profile"),
       ),
       body: StreamBuilder<ProfileModel>(
-        stream: apiService!.getUserProfileDetails().asStream(),
+        stream: apiService!.streamController.stream,
         builder: (BuildContext context, AsyncSnapshot<ProfileModel> snapshot) {
           if (snapshot.hasData) {
             return Column(

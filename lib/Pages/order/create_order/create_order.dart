@@ -68,9 +68,9 @@ class _CreateOrderState extends State<CreateOrder>
             Padding(
               padding: const EdgeInsets.all(18),
               child: ValueListenableBuilder(
-                valueListenable: BookingTab.name,
+                valueListenable: name,
                 builder: (context, value, child) => IgnorePointer(
-                  ignoring: BookingTab.name.text.isEmpty ? true : false,
+                  ignoring: name.text.isEmpty ? true : false,
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
@@ -109,10 +109,12 @@ class _CreateOrderState extends State<CreateOrder>
 
   var isEnemyAddedAtFive = false;
   validation() {
-    if (BookingTab.name.text.isEmpty) {
+    if (name.text.isEmpty) {
       return Fluttertoast.showToast(msg: "Name is Empty");
-    } else if (BookingTab.name.text.isNotEmpty && !isEnemyAddedAtFive) {
+    } else if (name.text.isNotEmpty && !isEnemyAddedAtFive) {
+      // if (_tabController!.index == 0) {
       _tabController!.animateTo((_tabController!.index + 1));
+      // }
       isEnemyAddedAtFive = true;
     } else {
       Navigator.of(context).push(MaterialPageRoute(

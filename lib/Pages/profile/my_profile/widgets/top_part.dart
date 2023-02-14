@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../Models/profile_model.dart';
 import '../../../../const.dart';
+import '../../edit_profile/edit_profile.dart';
 
 class TopPart extends StatelessWidget {
   final ProfileModel profileModel;
@@ -58,7 +59,11 @@ class TopPart extends StatelessWidget {
                 Icons.arrow_forward_ios,
                 size: 20,
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => EditProfile(profileModel: profileModel),
+                ));
+              },
             ),
           ],
         ),

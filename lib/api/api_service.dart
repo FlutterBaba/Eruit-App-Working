@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:yaqoob_test_project/Models/change_password_model.dart';
 import 'package:yaqoob_test_project/Models/delete_account_model.dart';
@@ -10,6 +12,7 @@ import 'package:yaqoob_test_project/Models/register_model.dart';
 import 'package:yaqoob_test_project/Models/save_order_model.dart';
 import 'package:yaqoob_test_project/shared_service.dart';
 import '../Models/get_order_model.dart';
+import '../Models/hebdateday_eventbydate_model.dart';
 import '../Models/login_model.dart';
 
 class APIService {
@@ -115,6 +118,7 @@ class APIService {
 
   Future<SaveOrderResponseModel> saveOrder(
       SaveOrderModel saveOrderModel) async {
+    print("yaqoob${saveOrderModel.toJson()}");
     String? token = await SharedService.getToken();
     final response =
         await http.post(Uri.parse("$_baseUrl/OrderMob/SaveOrderData"),
@@ -172,8 +176,9 @@ class APIService {
   }
 
   // •	Get User Profile Details :
-
+  final StreamController<ProfileModel> streamController = StreamController();
   Future<ProfileModel> getUserProfileDetails() async {
+    print("Profile ");
     String? token = await SharedService.getToken();
     String url = "$_baseUrl/UserMob/GetUserMobProfile";
     final response = await http.get(
@@ -184,7 +189,12 @@ class APIService {
       },
     );
     if (response.statusCode == 200 || response.statusCode == 400) {
-      return ProfileModel.fromJson(json.decode(response.body.toString()));
+      ProfileModel profileModel =
+          ProfileModel.fromJson(json.decode(response.body.toString()));
+      if (!streamController.isClosed) {
+        streamController.sink.add(profileModel);
+      }
+      return profileModel;
     } else {
       throw Exception('Failed to load data!');
     }
@@ -228,6 +238,66 @@ class APIService {
           json.decode(response.body.toString()));
     } else {
       throw Exception('Failed to load data!');
+    }
+  }
+
+  // •	Get Hebdate and Day Event By Date
+
+  Future<HebdateDayEventByDateModel> getHebdateDayEventByDate(
+    String date,
+  ) async {
+    print(date);
+    String? token = await SharedService.getToken();
+    String url = "$_baseUrl/OrderMob/GetHebdateAndDayEvent?FromDate=$date";
+    final response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        "Content-Type": "application/json; charset=utf-8",
+        "Authorization": "Bearer $token",
+      },
+    );
+    if (response.statusCode == 200 || response.statusCode == 400) {
+      return HebdateDayEventByDateModel.fromJson(
+        json.decode(response.body.toString()),
+      );
+    } else {
+      throw Exception('Failed to load data!');
+    }
+  }
+
+  /// update profile
+
+  updateProfile(ProfileModel profileModel) async {
+    String? token = await SharedService.getToken();
+    Map<String, String> headers = {
+      "Content-Type": "application/json; charset=utf-8",
+      "Authorization": "Bearer $token",
+    };
+    var uri = Uri.parse("$_baseUrl/UserMob/UpdateUserMobProfile");
+    var request = http.MultipartRequest("POST", uri);
+    request.headers.addAll(headers);
+    // var stream = http.ByteStream(DelegatingStream.typed(image!.openRead()));
+    // var length = await image!.length();
+    // var multipartFileSign = http.MultipartFile(
+    //   'ProfilePic',
+    //   stream,
+    //   length,
+    //   filename: basename(image!.path),
+    // );
+    // request.files.add(multipartFileSign);
+    request.fields['UserName'] = profileModel.data!.userName.toString();
+    request.fields['FirstName'] = profileModel.data!.firstName.toString();
+    request.fields['LastName'] = profileModel.data!.lastName.toString();
+    request.fields['EmailId'] = profileModel.data!.emailId.toString();
+    request.fields['Phone'] = profileModel.data!.phone.toString();
+    request.fields['Language'] = 'English';
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      String? errorResponse =
+          await response.stream.transform(utf8.decoder).first;
+      var value = json.decode(errorResponse);
+      List<dynamic> error = value["Messages"];
+      return Fluttertoast.showToast(msg: error[0]);
     }
   }
 }

@@ -18,9 +18,9 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool obscureText = true;
-  static TextEditingController firmname = TextEditingController();
-  static TextEditingController username = TextEditingController();
-  static TextEditingController password = TextEditingController();
+  TextEditingController firmname = TextEditingController();
+  TextEditingController username = TextEditingController();
+  TextEditingController password = TextEditingController();
 
   APIService? apiService;
   bool isloading = false;

@@ -28,16 +28,6 @@ class _BottomButtonState extends State<BottomButton> {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  print("...........................\n\n\n");
-                  print(orderstatus);
-                  print(agents);
-                  print(orderstatus);
-                  print(eventLocation.text);
-                  print(events);
-                  print(hall);
-                  print(menu);
-                  print(sever);
-
                   APIService apiService = APIService();
                   setState(() {
                     isloading = true;
@@ -63,11 +53,11 @@ class _BottomButtonState extends State<BottomButton> {
                         ),
                       ],
                       booking: Booking(
-                        name: BookingTab.name.text,
-                        address1: BookingTab.address1.text,
-                        telefon1: BookingTab.telephone1.text,
-                        emailAdress: BookingTab.email.text,
-                        number: BookingTab.phone.text,
+                        name: name.text,
+                        address1: address1.text,
+                        telefon1: telephone1.text,
+                        emailAdress: email.text,
+                        number: phone.text,
                         picture: "",
                         terms: terms,
                       ),

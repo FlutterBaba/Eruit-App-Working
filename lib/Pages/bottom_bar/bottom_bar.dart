@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:yaqoob_test_project/Pages/order/order_list_page/order_list_page.dart';
 
 import '../../const.dart';
+import '../home/home_page.dart';
 import '../profile/my_profile/my_profile.dart';
 
 class BottomBar extends StatefulWidget {
@@ -16,7 +17,7 @@ class _BottomBarState extends State<BottomBar> {
   int _selectedIndex = 1;
 
   static final List<Widget> _widgetOptions = <Widget>[
-    const Text("data"),
+    const CalendarPage(),
     const OrderListPage(),
     const MyProfile(),
     const Text("data"),
