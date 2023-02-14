@@ -23,7 +23,7 @@ class MyDropDown extends StatelessWidget {
       style: const TextStyle(
         fontSize: 17,
       ),
-      value: items.first,
+      value: null,
       icon: const Icon(Icons.keyboard_arrow_down),
       items: items.map(
         (Datum items) {

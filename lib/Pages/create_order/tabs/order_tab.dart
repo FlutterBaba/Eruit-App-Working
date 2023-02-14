@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:yaqoob_test_project/Models/quick_select_model.dart';
 import 'package:yaqoob_test_project/api/api_service.dart';
+import 'package:yaqoob_test_project/provider/order_provider/order_provider.dart';
 import '../../../const.dart';
 import '../../../widgets/my_drop_down.dart';
 
@@ -22,7 +24,6 @@ class OrderTab extends StatefulWidget {
 class _OrderTabState extends State<OrderTab> {
   APIService? apiService;
   List<Datum> termsList = [];
-  List<Datum> orderstatusList = [];
   List<Datum> agentsList = [];
   List<Datum> eventsList = [];
 
@@ -30,7 +31,6 @@ class _OrderTabState extends State<OrderTab> {
   void initState() {
     apiService = APIService();
     getTerms();
-    getOrderStatus();
     getAgents();
     getEvvents();
     super.initState();
@@ -42,15 +42,6 @@ class _OrderTabState extends State<OrderTab> {
       termsList = value.data;
     });
     termsList.sort((a, b) => a.value.compareTo(b.value));
-  }
-
-  getOrderStatus() async {
-    QuickSelectModel value = await apiService!.getOrderStatus();
-    setState(() {
-      orderstatusList = value.data;
-      orderstatus = orderstatusList[0].text;
-    });
-    orderstatusList.sort((a, b) => a.value.compareTo(b.value));
   }
 
   getAgents() async {
@@ -71,8 +62,9 @@ class _OrderTabState extends State<OrderTab> {
 
   @override
   Widget build(BuildContext context) {
+    OrderProvider orderProvider = Provider.of<OrderProvider>(context);
     return termsList.isEmpty ||
-            orderstatusList.isEmpty ||
+            orderProvider.getOrderStatusList.isEmpty ||
             agentsList.isEmpty ||
             eventsList.isEmpty
         ? const Center(
@@ -118,7 +110,7 @@ class _OrderTabState extends State<OrderTab> {
                     },
                   ),
                   MyDropDown(
-                    items: orderstatusList,
+                    items: orderProvider.getOrderStatusList,
                     labelText: "Order Status",
                     onChanged: (item) {
                       setState(() {

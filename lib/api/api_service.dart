@@ -5,33 +5,11 @@ import 'package:yaqoob_test_project/Models/order_details_model.dart';
 import 'package:yaqoob_test_project/Models/quick_select_model.dart';
 import 'package:yaqoob_test_project/Models/save_order_model.dart';
 import 'package:yaqoob_test_project/shared_service.dart';
-import '../Models/get_order_model.dart';
 import '../Models/login_model.dart';
 
 class APIService {
   final String _baseUrl = "http://54.74.47.46:82";
   // •	Get Order list :
-  Future<GetOrderModel> getOrders() async {
-    print(DateTime.now());
-    String? token = await SharedService.getToken();
-    String url = "$_baseUrl/Order/GetOrders";
-    final response = await http.post(
-      Uri.parse(url),
-      headers: <String, String>{
-        "Content-Type": "application/json; charset=utf-8",
-        "Authorization": "Bearer $token",
-      },
-      body: jsonEncode(<String, dynamic>{}),
-    );
-    if (response.statusCode == 200 || response.statusCode == 400) {
-      GetOrderModel getOrderModel = GetOrderModel.fromJson(
-        json.decode(response.body),
-      );
-      return getOrderModel;
-    } else {
-      throw Exception('Failed to load data!');
-    }
-  }
 
   //•	Get Order Details by Order Number  :
 // 124029

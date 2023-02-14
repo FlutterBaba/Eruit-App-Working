@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:yaqoob_test_project/const.dart';
+import 'package:yaqoob_test_project/provider/order_provider/order_provider.dart';
 
 import '../../Models/quick_select_model.dart';
 import '../../api/api_service.dart';
@@ -30,23 +32,13 @@ class _EventsPageState extends State<EventsPage> {
   @override
   void initState() {
     apiService = APIService();
-    getHall();
     getMenu();
     getServer();
     super.initState();
   }
 
-  List<Datum> hallList = [];
   List<Datum> menuList = [];
   List<Datum> serverList = [];
-
-  getHall() async {
-    QuickSelectModel value = await apiService!.getMainTabel(4);
-    setState(() {
-      hallList = value.data;
-    });
-    hallList.sort((a, b) => a.value.compareTo(b.value));
-  }
 
   getMenu() async {
     QuickSelectModel value = await apiService!.getMainTabel(2);
@@ -90,12 +82,15 @@ class _EventsPageState extends State<EventsPage> {
 
   @override
   Widget build(BuildContext context) {
+    OrderProvider orderProvider = Provider.of<OrderProvider>(context);
     return Scaffold(
       bottomNavigationBar: const BottomButton(),
       appBar: AppBar(
         elevation: 1,
       ),
-      body: hallList.isEmpty || menuList.isEmpty || serverList.isEmpty
+      body: orderProvider.getHallList.isEmpty ||
+              menuList.isEmpty ||
+              serverList.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -120,7 +115,7 @@ class _EventsPageState extends State<EventsPage> {
                       ),
                     ),
                     MyDropDown(
-                      items: hallList,
+                      items: orderProvider.getHallList,
                       labelText: "Hall",
                       onChanged: (item) {
                         setState(() {
