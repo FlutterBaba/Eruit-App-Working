@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:yaqoob_test_project/const.dart';
-import 'package:yaqoob_test_project/provider/order_provider/order_provider.dart';
-
 import '../../Models/quick_select_model.dart';
 import '../../api/api_service.dart';
 import '../../widgets/my_drop_down.dart';
@@ -162,7 +160,27 @@ class _EventsPageState extends State<EventsPage> {
                             use24hFormat: true,
                             // This is called when the user changes the date.
                             onDateTimeChanged: (DateTime newDate) {
-                              setState(() => date = newDate);
+                              setState(
+                                () {
+                                  date = newDate;
+                                  apiService!
+                                      .getHebdateDayEventByDate(
+                                          "${date.month}-${date.day}-${date.year}")
+                                      .then(
+                                    (value) {
+                                      if (value.requestResponse == false) {
+                                        Fluttertoast.showToast(
+                                            msg: value.messages![0]);
+                                      } else {
+                                        hebdate.text =
+                                            value.data!.hebdate.toString();
+                                        dayevent.text =
+                                            value.data!.dayEvent.toString();
+                                      }
+                                    },
+                                  );
+                                },
+                              );
                             },
                           ),
                         );
@@ -260,12 +278,14 @@ class _EventsPageState extends State<EventsPage> {
                       },
                     ),
                     TextField(
+                      style: const TextStyle(color: klightTextColor),
                       controller: hebdate,
                       decoration: const InputDecoration(
                         labelText: "Hebdate",
                       ),
                     ),
                     TextField(
+                      style: const TextStyle(color: klightTextColor),
                       controller: dayevent,
                       decoration: const InputDecoration(
                         labelText: "Day Event",

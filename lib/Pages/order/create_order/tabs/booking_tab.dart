@@ -1,18 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import '../../../const.dart';
+import '../../../../const.dart';
 
-class BookingTab extends StatelessWidget {
+TextEditingController name = TextEditingController();
+TextEditingController address1 = TextEditingController();
+TextEditingController telephone1 = TextEditingController();
+TextEditingController email = TextEditingController();
+TextEditingController phone = TextEditingController();
+TextEditingController contact = TextEditingController();
+TextEditingController telephone2 = TextEditingController();
+TextEditingController email1 = TextEditingController();
+
+class BookingTab extends StatefulWidget {
   const BookingTab({super.key});
-  static TextEditingController name = TextEditingController();
-  static TextEditingController address1 = TextEditingController();
-  static TextEditingController telephone1 = TextEditingController();
-  static TextEditingController email = TextEditingController();
-  static TextEditingController phone = TextEditingController();
-  static TextEditingController contact = TextEditingController();
-  static TextEditingController telephone2 = TextEditingController();
-  static TextEditingController email1 = TextEditingController();
+
+  @override
+  State<BookingTab> createState() => _BookingTabState();
+}
+
+class _BookingTabState extends State<BookingTab> {
+  @override
+  void dispose() {
+    name.dispose();
+    address1.dispose();
+    telephone1.dispose();
+    email.dispose();
+    phone.dispose();
+    contact.dispose();
+    telephone2.dispose();
+    email1.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(

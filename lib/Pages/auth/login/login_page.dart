@@ -2,10 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:yaqoob_test_project/Pages/order_list_page/order_list_page.dart';
+import 'package:yaqoob_test_project/Models/login_model.dart';
+import 'package:yaqoob_test_project/Pages/auth/login/forgot_password/forgot_password.dart';
+import 'package:yaqoob_test_project/Pages/bottom_bar/bottom_bar.dart';
 import 'package:yaqoob_test_project/shared_service.dart';
-import '../../api/api_service.dart';
-import '../../const.dart';
+import '../../../api/api_service.dart';
+import '../../../const.dart';
+import '../register_page/register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,15 +18,24 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool obscureText = true;
-  static TextEditingController firmname = TextEditingController();
-  static TextEditingController username = TextEditingController();
-  static TextEditingController password = TextEditingController();
+  TextEditingController firmname = TextEditingController();
+  TextEditingController username = TextEditingController();
+  TextEditingController password = TextEditingController();
+
   APIService? apiService;
   bool isloading = false;
   @override
   void initState() {
     apiService = APIService();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    firmname.dispose();
+    username.dispose();
+    password.dispose();
+    super.dispose();
   }
 
   @override
@@ -134,7 +146,11 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CupertinoButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const RegisterPage(),
+                    ));
+                  },
                   padding: EdgeInsets.zero,
                   child: const Text(
                     "Sign up",
@@ -146,7 +162,11 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 CupertinoButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const ForgotPassword(),
+                    ));
+                  },
                   padding: EdgeInsets.zero,
                   child: const Text(
                     "Forgot password?",
@@ -177,12 +197,13 @@ class _LoginPageState extends State<LoginPage> {
       });
       apiService!
           .login(
-        username: username.text.trim(),
-        password: password.text.trim(),
+        loginModel: LoginModel(
+          password: password.text.trim(),
+          userName: username.text.trim(),
+        ),
         firmname: firmname.text.trim(),
       )
           .then((value) {
-        print(value.data);
         setState(() {
           isloading = false;
         });
@@ -190,10 +211,9 @@ class _LoginPageState extends State<LoginPage> {
           Fluttertoast.showToast(msg: value.messages![0]);
         } else {
           SharedService.setLoginDetails(value);
-
           Fluttertoast.showToast(msg: "Login Successful");
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => const OrderListPage(),
+            builder: (context) => const BottomBar(),
           ));
         }
       });

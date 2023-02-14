@@ -15,12 +15,17 @@ class LoginResponseModel {
         ),
         data: json["Data"],
       );
+}
 
+class LoginModel {
+  LoginModel({
+    this.userName,
+    this.password,
+  });
+  String? userName;
+  String? password;
   Map<String, dynamic> toJson() => {
-        "RequestResponse": requestResponse,
-        "Messages": List<dynamic>.from(
-          messages!.map((x) => x),
-        ),
-        "Data": data,
+        "userName": userName,
+        "password": password,
       };
 }

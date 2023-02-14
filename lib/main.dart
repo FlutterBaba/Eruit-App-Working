@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:yaqoob_test_project/Pages/order_list_page/order_list_page.dart';
-import 'Pages/login/login_page.dart';
+import 'package:yaqoob_test_project/Pages/splash/splash_page.dart';
+import 'Pages/auth/login/login_page.dart';
 import 'const.dart';
 import 'provider/order_provider/order_provider.dart';
 import 'shared_service.dart';
@@ -16,7 +16,7 @@ void main() async {
   // Get result of the login function.
   bool result = await SharedService.isLoggedIn();
   if (result) {
-    _defaultHome = const OrderListPage();
+    _defaultHome = const SplishScreen();
     // OrderListPage();
     //  HomePage();
   }
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Flutter Demo',
+          title: 'Eruit App',
           theme: ThemeData(
             iconTheme: const IconThemeData(color: ktextColor),
             cupertinoOverrideTheme: const NoDefaultCupertinoThemeData(
@@ -87,7 +87,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
           home: _defaultHome
-          // home: _defaultHome,
+          // home: const ForgotPassword(),
           ),
     );
   }

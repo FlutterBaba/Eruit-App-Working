@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:yaqoob_test_project/Models/order_details_model.dart';
 import 'package:yaqoob_test_project/utils/hex_color.dart';
-import '../../../const.dart';
+import '../../../../const.dart';
 
 class Details extends StatelessWidget {
   final OrderDetailsModel orderDetailsModel;

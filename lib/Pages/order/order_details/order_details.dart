@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yaqoob_test_project/Models/order_details_model.dart';
-import '../../api/api_service.dart';
-import '../../const.dart';
+import '../../../api/api_service.dart';
+import '../../../const.dart';
 import 'widgets/details.dart';
 import 'widgets/order_details_events.dart';
 
