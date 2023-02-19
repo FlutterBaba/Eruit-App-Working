@@ -7,9 +7,13 @@ import '../../Models/quick_select_model.dart';
 import '../../api/api_service.dart';
 import 'package:http/http.dart' as http;
 
+import '../../constants/constants.dart';
+
 class OrderProvider with ChangeNotifier {
   // Create order booking details fields controllers//
   final String _baseUrl = "http://54.74.47.46:82";
+
+  List<Datum> _orderstatusList = [];
   final APIService _apiService = APIService();
   List<Datum> _menuList = [];
   List<Datum> _serverList = [];
@@ -17,7 +21,6 @@ class OrderProvider with ChangeNotifier {
   List<Datum> _agentsList = [];
   List<Datum> _eventsList = [];
   List<Datum> _hallList = [];
-  List<Datum> _orderstatusList = [];
 
   void getOrderStatus() async {
     QuickSelectModel value = await _apiService.getOrderStatus();
@@ -72,10 +75,10 @@ class OrderProvider with ChangeNotifier {
 
   List<Entities> entitiesList = [];
 
-  Future<Either<List<Entities>, String>> getOrders(
+  Future<Either<GetOrderModel, String>> getOrders(
       {required Map<String, dynamic> jsonValue}) async {
     String? token = await SharedService.getToken();
-    String url = "$_baseUrl/Order/GetOrders";
+    String url = "$baseUrl/Order/GetOrders";
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -93,9 +96,7 @@ class OrderProvider with ChangeNotifier {
           return const Right("No Data Found");
         } else {
           GetOrderModel getOrderModel = GetOrderModel.fromJson(value);
-          entitiesList.addAll(getOrderModel.data!.entities!);
-
-          return Left(entitiesList);
+          return Left(getOrderModel);
         }
       } else {
         return const Right("Something Went Wrong");

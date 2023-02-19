@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yaqoob_test_project/Pages/splash/splash_page.dart';
 import 'package:yaqoob_test_project/provider/order_provider/create_order_provider.dart';
+import 'package:yaqoob_test_project/provider/order_summery_provider/order_summery_provider.dart';
 import 'Pages/auth/login/login_page.dart';
 import 'const.dart';
 import 'provider/order_provider/order_provider.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => OrderProvider()),
         ChangeNotifierProvider(create: (_) => CreateOrderProvider()),
+        ChangeNotifierProvider(create: (_) => OrderSummeryProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -67,6 +69,10 @@ class MyApp extends StatelessWidget {
             alignLabelWithHint: true,
             labelStyle: const TextStyle(color: klightTextColor),
             enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: kborderColor),
+            ),
+            disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: kborderColor),
             ),
