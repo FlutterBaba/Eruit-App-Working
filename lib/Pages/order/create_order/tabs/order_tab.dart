@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:yaqoob_test_project/Models/quick_select_model.dart';
 import 'package:yaqoob_test_project/api/api_service.dart';
 import '../../../../const.dart';
+import '../../../../provider/order_provider/order_provider.dart';
 import '../../../../widgets/my_drop_down.dart';
 
 int terms = 0;

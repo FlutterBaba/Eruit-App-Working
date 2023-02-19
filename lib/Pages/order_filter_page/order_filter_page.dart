@@ -6,7 +6,7 @@ import 'package:yaqoob_test_project/provider/order_provider/order_provider.dart'
 import '../../../Models/quick_select_model.dart';
 import '../../../const.dart';
 import '../../../widgets/my_drop_down.dart';
-import '../order_list_page/order_list_page.dart';
+import '../order/order_list_page/order_list_page.dart';
 
 enum SingingCharacter { eventdate, orderdate, lastupdate }
 
@@ -80,6 +80,11 @@ class _OrderListPageFilterPopupState extends State<OrderListPageFilterPopup> {
                         "toTotal": toTotal.text.isEmpty ? null : toTotal.text,
                         "halls": hallValue,
                         "statuses": orderStatusValue,
+                        // "sortField": _character == SingingCharacter.lastupdate
+                        //     ? "last_update"
+                        //     : _character == SingingCharacter.orderdate
+                        //         ? "order_date"
+                        //         : "event_date",
                       };
                     });
                     Navigator.of(context).pop();
@@ -91,15 +96,19 @@ class _OrderListPageFilterPopupState extends State<OrderListPageFilterPopup> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    fromOrder.clear();
-                    toOrder.clear();
-                    _dateRange = null;
-                    fromTotal.clear();
-                    toTotal.clear();
-                    hallValue = null;
-                    orderStatusValue = null;
-                    _character = SingingCharacter.eventdate;
-                    setState(() {});
+                    setState(() {
+                      filterOrder={};
+                      fromOrder.clear();
+                      toOrder.clear();
+                      _dateRange = null;
+                      fromTotal.clear();
+                      toTotal.clear();
+                      hallValue = null;
+                      orderStatusValue = null;
+                      _character = SingingCharacter.eventdate;
+                    });
+
+                    Navigator.of(context).pop();
                   },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -158,8 +167,12 @@ class _OrderListPageFilterPopupState extends State<OrderListPageFilterPopup> {
             const Text("Date"),
             const SizedBox(height: 10),
             TextField(
+              readOnly: true,
+              onTap: () {
+                _showDateRangePicker();
+              },
               decoration: InputDecoration(
-                labelText: _dateRange == null
+                hintText: _dateRange == null
                     ? "From Date - To Date"
                     : "${monthList[_dateRange!.start.month - 1]} ${_dateRange!.start.day} - ${monthList[_dateRange!.end.month - 1]} ${_dateRange!.end.day} ",
                 suffixIcon: IconButton(
