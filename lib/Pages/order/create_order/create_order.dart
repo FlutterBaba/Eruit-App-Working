@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
+import 'package:yaqoob_test_project/provider/order_provider/create_order_provider.dart';
 import '../../../const.dart';
 import '../../events/events_page.dart';
 import 'tabs/booking_tab.dart';
@@ -18,6 +20,8 @@ class _CreateOrderState extends State<CreateOrder>
     const Tab(text: "Booking Details"),
     const Tab(text: "Order Details"),
   ];
+  CreateOrderProvider? _appProvider;
+
   @override
   void initState() {
     super.initState();
@@ -25,8 +29,43 @@ class _CreateOrderState extends State<CreateOrder>
   }
 
   @override
+  void didChangeDependencies() {
+    _appProvider = Provider.of<CreateOrderProvider>(context, listen: false);
+    // _appProvider!.name = "";
+    // _appProvider!.address1 = "";
+    // _appProvider!.telephone1 = "";
+    // _appProvider!.email = "";
+    // _appProvider!.name = "";
+    // _appProvider!.phone = "";
+    // // order details
+    // _appProvider!.terms = null;
+    // _appProvider!.orderStatus = "";
+    // _appProvider!.agents = null;
+    // _appProvider!.eventLocation = "";
+    // _appProvider!.events = null;
+    super.didChangeDependencies();
+  }
+
+  @override
   void dispose() {
+    _appProvider!.name = "";
+    _appProvider!.address1 = "";
+    _appProvider!.telephone1 = "";
+    _appProvider!.email = "";
+    _appProvider!.name = "";
+    _appProvider!.phone = "";
+    // order details
+    _appProvider!.terms = null;
+    _appProvider!.orderStatus = "";
+    _appProvider!.agents = null;
+    _appProvider!.eventLocation = "";
+    _appProvider!.events = null;
     _tabController!.dispose();
+    _appProvider!.toDate = null;
+    _appProvider!.formDate = null;
+    _appProvider!.fromTime = null;
+    _appProvider!.toTime = null;
+
     super.dispose();
   }
 
@@ -39,11 +78,37 @@ class _CreateOrderState extends State<CreateOrder>
           padding: const EdgeInsets.all(18),
           color: const Color(0xffF9FAFB),
           width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () {
-              validation();
-            },
-            child: const Text("Events"),
+          child: Consumer<CreateOrderProvider>(
+            builder: (context, createOrderProvider, child) => ElevatedButton(
+              onPressed: () {
+                if (createOrderProvider.name!.isEmpty) {
+                  Fluttertoast.showToast(msg: "Name is Empty");
+                } else if (_tabController!.index == 0) {
+                  _tabController!.animateTo((_tabController!.index + 1));
+                  return;
+                } else {
+                  if (createOrderProvider.terms == null) {
+                    Fluttertoast.showToast(msg: "Terms is Empty");
+                  } else if (createOrderProvider.orderStatus!.isEmpty) {
+                    Fluttertoast.showToast(msg: "Order Status is Empty");
+                  } else if (createOrderProvider.agents == null) {
+                    Fluttertoast.showToast(msg: "Agents is Empty");
+                  } else if (createOrderProvider.events == null) {
+                    Fluttertoast.showToast(msg: "Events is Empty");
+                  } else {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const EventsPage(),
+                    ));
+
+                    // print(createOrderProvider.terms.toString());
+                    // print(createOrderProvider.orderStatus.toString());
+                    // print(createOrderProvider.agents.toString());
+                    // print(createOrderProvider.events.toString());
+                  }
+                }
+              },
+              child: const Text("Events"),
+            ),
           ),
         ),
         appBar: AppBar(
@@ -67,10 +132,9 @@ class _CreateOrderState extends State<CreateOrder>
             ),
             Padding(
               padding: const EdgeInsets.all(18),
-              child: ValueListenableBuilder(
-                valueListenable: name,
-                builder: (context, value, child) => IgnorePointer(
-                  ignoring: name.text.isEmpty ? true : false,
+              child: Consumer<CreateOrderProvider>(
+                builder: (context, createOrderProvider, child) => IgnorePointer(
+                  ignoring: createOrderProvider.name!.isEmpty ? true : false,
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
@@ -105,21 +169,5 @@ class _CreateOrderState extends State<CreateOrder>
         ),
       ),
     );
-  }
-
-  var isEnemyAddedAtFive = false;
-  validation() {
-    if (name.text.isEmpty) {
-      return Fluttertoast.showToast(msg: "Name is Empty");
-    } else if (name.text.isNotEmpty && !isEnemyAddedAtFive) {
-      // if (_tabController!.index == 0) {
-      _tabController!.animateTo((_tabController!.index + 1));
-      // }
-      isEnemyAddedAtFive = true;
-    } else {
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => const EventsPage(),
-      ));
-    }
   }
 }

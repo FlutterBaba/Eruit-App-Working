@@ -7,11 +7,14 @@ class MyDropDown extends StatelessWidget {
   final List<Datum> items;
   final void Function(Datum?)? onChanged;
   final String labelText;
-  const MyDropDown(
-      {super.key,
-      required this.items,
-      this.onChanged,
-      required this.labelText});
+  final Datum? value;
+  const MyDropDown({
+    super.key,
+    required this.items,
+    this.onChanged,
+    required this.labelText,
+    this.value,
+  });
   @override
   Widget build(BuildContext context) {
     return DropdownButtonHideUnderline(
@@ -23,14 +26,14 @@ class MyDropDown extends StatelessWidget {
       style: const TextStyle(
         fontSize: 17,
       ),
-      value: null,
+      value: value,
       icon: const Icon(Icons.keyboard_arrow_down),
       items: items.map(
         (Datum items) {
           return DropdownMenuItem(
             value: items,
             child: Text(
-              items.text,
+              labelText == "Order Status" ? items.value : items.text,
               style: const TextStyle(color: klightTextColor),
             ),
           );

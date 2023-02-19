@@ -1,16 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
+import 'package:yaqoob_test_project/provider/order_provider/create_order_provider.dart';
 import '../../../../const.dart';
-
-TextEditingController name = TextEditingController();
-TextEditingController address1 = TextEditingController();
-TextEditingController telephone1 = TextEditingController();
-TextEditingController email = TextEditingController();
-TextEditingController phone = TextEditingController();
-TextEditingController contact = TextEditingController();
-TextEditingController telephone2 = TextEditingController();
-TextEditingController email1 = TextEditingController();
 
 class BookingTab extends StatefulWidget {
   const BookingTab({super.key});
@@ -20,16 +13,33 @@ class BookingTab extends StatefulWidget {
 }
 
 class _BookingTabState extends State<BookingTab> {
+  TextEditingController name = TextEditingController();
+  TextEditingController address1 = TextEditingController();
+  TextEditingController telephone1 = TextEditingController();
+  TextEditingController email = TextEditingController();
+  TextEditingController phone = TextEditingController();
+
+  @override
+  void initState() {
+    CreateOrderProvider createOrderProvider =
+        Provider.of<CreateOrderProvider>(context, listen: false);
+    if (createOrderProvider.editBool == true) {
+      name.text = createOrderProvider.name.toString();
+      address1.text = createOrderProvider.address1.toString();
+      telephone1.text = createOrderProvider.telephone1.toString();
+      email.text = createOrderProvider.email.toString();
+      phone.text = createOrderProvider.phone.toString();
+    }
+    super.initState();
+  }
+
   @override
   void dispose() {
-    name.dispose();
-    address1.dispose();
-    telephone1.dispose();
-    email.dispose();
-    phone.dispose();
-    contact.dispose();
-    telephone2.dispose();
-    email1.dispose();
+    name.clear();
+    address1.clear();
+    telephone1.clear();
+    email.clear();
+    phone.clear();
     super.dispose();
   }
 
@@ -77,54 +87,44 @@ class _BookingTabState extends State<BookingTab> {
             ),
           ),
           const SizedBox(height: 20),
-          OverflowBar(
-            overflowSpacing: 20,
-            children: [
-              TextField(
-                controller: name,
-                keyboardType: TextInputType.name,
-                decoration: const InputDecoration(labelText: "Name"),
-              ),
-              TextField(
-                controller: address1,
-                keyboardType: TextInputType.streetAddress,
-                decoration: const InputDecoration(labelText: "Address 1"),
-              ),
-              TextField(
-                controller: telephone1,
-                inputFormatters: [LengthLimitingTextInputFormatter(10)],
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(labelText: "Telephone 1"),
-              ),
-              TextField(
-                controller: email,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: "Email"),
-              ),
-              TextField(
-                controller: phone,
-                inputFormatters: [LengthLimitingTextInputFormatter(10)],
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(labelText: "Phone"),
-              ),
-              TextField(
-                controller: contact,
-                inputFormatters: [LengthLimitingTextInputFormatter(10)],
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(labelText: "Contact"),
-              ),
-              TextField(
-                controller: telephone2,
-                inputFormatters: [LengthLimitingTextInputFormatter(10)],
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(labelText: "Telephone 2"),
-              ),
-              TextField(
-                controller: email1,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: "Email 1"),
-              ),
-            ],
+          Consumer<CreateOrderProvider>(
+            builder: (context, ceateOrderProvider, child) => OverflowBar(
+              overflowSpacing: 20,
+              children: [
+                TextField(
+                  onChanged: ceateOrderProvider.setname,
+                  controller: name,
+                  keyboardType: TextInputType.name,
+                  decoration: const InputDecoration(labelText: "Name"),
+                ),
+                TextField(
+                  onChanged: ceateOrderProvider.setAddress1,
+                  controller: address1,
+                  keyboardType: TextInputType.streetAddress,
+                  decoration: const InputDecoration(labelText: "Address 1"),
+                ),
+                TextField(
+                  onChanged: ceateOrderProvider.setTelephone1,
+                  controller: telephone1,
+                  inputFormatters: [LengthLimitingTextInputFormatter(10)],
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(labelText: "Telephone 1"),
+                ),
+                TextField(
+                  onChanged: ceateOrderProvider.setEmail,
+                  controller: email,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(labelText: "Email"),
+                ),
+                TextField(
+                  onChanged: ceateOrderProvider.setPhone,
+                  controller: phone,
+                  inputFormatters: [LengthLimitingTextInputFormatter(10)],
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(labelText: "Phone"),
+                ),
+              ],
+            ),
           ),
         ],
       ),

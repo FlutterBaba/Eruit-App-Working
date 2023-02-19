@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:yaqoob_test_project/Models/order_details_model.dart';
-
+import 'package:yaqoob_test_project/Pages/events/event_details/event_details.dart';
 import '../../../../const.dart';
 
 //   order details OrderDetailsEvents .... list
@@ -19,7 +20,15 @@ class OrderDetailsEvents extends StatelessWidget {
               (events) => Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: CupertinoButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => EventsDetails(
+                          eventId: events.tEventId.toString(),
+                        ),
+                      ),
+                    );
+                  },
                   padding: EdgeInsets.zero,
                   child: Column(
                     children: [
@@ -70,14 +79,23 @@ class OrderDetailsEvents extends StatelessWidget {
                                   Row(
                                     children: [
                                       Text(
-                                        "${events.fromTime}\t-\t",
+                                        DateFormat.jm().format(
+                                          DateFormat("hh:mm:ss").parse(
+                                            events.fromTime.toString(),
+                                          ),
+                                        ),
                                         style: const TextStyle(
                                           fontSize: 12,
                                           color: ktextColor,
                                         ),
                                       ),
+                                      const Text("\t-\t"),
                                       Text(
-                                        "${events.toTime}",
+                                        DateFormat.jm().format(
+                                          DateFormat("hh:mm:ss").parse(
+                                            events.toTime.toString(),
+                                          ),
+                                        ),
                                         style: const TextStyle(
                                           fontSize: 12,
                                           color: ktextColor,

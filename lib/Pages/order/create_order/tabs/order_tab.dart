@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:yaqoob_test_project/Models/quick_select_model.dart';
 import 'package:yaqoob_test_project/api/api_service.dart';
+import 'package:yaqoob_test_project/provider/order_provider/create_order_provider.dart';
 import '../../../../const.dart';
+import '../../../../provider/order_provider/order_provider.dart';
 import '../../../../widgets/my_drop_down.dart';
-
-int terms = 0;
-String? orderstatus;
-int agents = 0;
-int events = 0;
-TextEditingController eventLocation = TextEditingController();
-var orderDate = DateFormat.yMd().add_jm().format(DateTime.now());
 
 class OrderTab extends StatefulWidget {
   const OrderTab({super.key});
@@ -22,50 +16,47 @@ class OrderTab extends StatefulWidget {
 
 class _OrderTabState extends State<OrderTab> {
   APIService? apiService;
-  List<Datum> termsList = [];
-  List<Datum> agentsList = [];
-  List<Datum> eventsList = [];
-
+  var orderDate = DateFormat.yMd().add_jm().format(DateTime.now());
+  TextEditingController eventLocation = TextEditingController();
   @override
   void initState() {
     apiService = APIService();
-    getTerms();
-    getAgents();
-    getEvvents();
+
     super.initState();
   }
 
-  getTerms() async {
-    QuickSelectModel value = await apiService!.getMainTabel(33);
-    setState(() {
-      termsList = value.data;
-    });
-    termsList.sort((a, b) => a.value.compareTo(b.value));
-  }
-
-  getAgents() async {
-    QuickSelectModel value = await apiService!.getMainTabel(31);
-    setState(() {
-      agentsList = value.data;
-    });
-    agentsList.sort((a, b) => a.value.compareTo(b.value));
-  }
-
-  getEvvents() async {
-    QuickSelectModel value = await apiService!.getMainTabel(7);
-    setState(() {
-      eventsList = value.data;
-    });
-    eventsList.sort((a, b) => a.value.compareTo(b.value));
+  @override
+  void dispose() {
+    eventLocation.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     OrderProvider orderProvider = Provider.of<OrderProvider>(context);
-    return termsList.isEmpty ||
+    // CreateOrderProvider createOrderProvider =
+    //     Provider.of<CreateOrderProvider>(context);
+
+    // int terms = orderProvider.getTermsList
+    //     .indexWhere((element) => element.value == createOrderProvider.terms);
+
+    // int orderStatus = orderProvider.getOrderStatusList.indexWhere(
+    //     (element) => element.value == createOrderProvider.orderStatus);
+
+    // int agents = orderProvider.getAgentsList
+    //     .indexWhere((element) => element.value == createOrderProvider.agents);
+
+    // createOrderProvider.eventLocation != null
+    //     ? eventLocation.text = createOrderProvider.eventLocation!
+    //     : null;
+
+    // int events = orderProvider.getEventsList
+    //     .indexWhere((element) => element.value == createOrderProvider.events);
+
+    return orderProvider.getTermsList.isEmpty ||
             orderProvider.getOrderStatusList.isEmpty ||
-            agentsList.isEmpty ||
-            eventsList.isEmpty
+            orderProvider.getAgentsList.isEmpty ||
+            orderProvider.getEventsList.isEmpty
         ? const Center(
             child: CircularProgressIndicator(),
           )
@@ -99,47 +90,41 @@ class _OrderTabState extends State<OrderTab> {
                       ),
                     ],
                   ),
-                  MyDropDown(
-                    items: termsList,
-                    labelText: "Terms",
-                    onChanged: (item) {
-                      setState(() {
-                        terms = item!.value;
-                      });
-                    },
-                  ),
-                  MyDropDown(
-                    items: orderProvider.getOrderStatusList,
-                    labelText: "Order Status",
-                    onChanged: (item) {
-                      setState(() {
-                        orderstatus = item!.text;
-                      });
-                    },
-                  ),
-                  MyDropDown(
-                    items: agentsList,
-                    labelText: "Agents",
-                    onChanged: (item) {
-                      setState(() {
-                        agents = item!.value;
-                      });
-                    },
-                  ),
-                  TextField(
-                    controller: eventLocation,
-                    style: const TextStyle(color: klightTextColor),
-                    decoration:
-                        const InputDecoration(labelText: "Event Location"),
-                  ),
-                  MyDropDown(
-                    items: eventsList,
-                    labelText: "Events",
-                    onChanged: (item) {
-                      setState(() {
-                        events = item!.value;
-                      });
-                    },
+                  Consumer<CreateOrderProvider>(
+                    builder: (context, createOrderProvider, child) =>
+                        OverflowBar(
+                      overflowSpacing: 20,
+                      children: [
+                        MyDropDown(
+                          items: orderProvider.getTermsList,
+                          labelText: "Terms",
+                          onChanged: createOrderProvider.setTems,
+                        ),
+                        MyDropDown(
+                          items: orderProvider.getOrderStatusList,
+                          labelText: "Order Status",
+                          onChanged: createOrderProvider.setOrderStatus,
+                        ),
+                        MyDropDown(
+                          items: orderProvider.getAgentsList,
+                          labelText: "Agents",
+                          onChanged: createOrderProvider.setAgent,
+                        ),
+                        TextField(
+                          onChanged: createOrderProvider.setEventLocation,
+                          controller: eventLocation,
+                          style: const TextStyle(color: klightTextColor),
+                          decoration: const InputDecoration(
+                            labelText: "Event Location",
+                          ),
+                        ),
+                        MyDropDown(
+                          items: orderProvider.getEventsList,
+                          labelText: "Events",
+                          onChanged: createOrderProvider.setEvents,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

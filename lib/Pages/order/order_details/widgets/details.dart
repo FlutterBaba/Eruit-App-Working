@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:yaqoob_test_project/Models/order_details_model.dart';
+import 'package:yaqoob_test_project/Pages/order/create_order/create_order.dart';
+import 'package:yaqoob_test_project/provider/order_provider/create_order_provider.dart';
 import 'package:yaqoob_test_project/utils/hex_color.dart';
 import '../../../../const.dart';
 
@@ -54,12 +58,24 @@ class Details extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SizedBox(
-                    height: 50,
-                    width: 60,
-                    child: Divider(
-                      thickness: 5,
-                      color: kpColor.withOpacity(0.1),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 15),
+                    decoration: BoxDecoration(
+                      color: kpColor.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    child: Center(
+                      child: Text(
+                        DateFormat.MMMd().format(
+                          DateTime.parse(
+                            orderDetailsModel.data!.lastUpdate.toString(),
+                          ),
+                        ),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                   Column(
@@ -115,7 +131,7 @@ class Details extends StatelessWidget {
                 child: ListTile(
                   title: const Text("Hall"),
                   subtitle: Text(
-                    orderDetailsModel.data!.booking!.name.toString(),
+                    orderDetailsModel.data!.events![0].hallName!..toString(),
                   ),
                 ),
               ),
@@ -137,8 +153,11 @@ class Details extends StatelessWidget {
                 child: ListTile(
                   title: const Text("Last updated"),
                   subtitle: Text(
-                    orderDetailsModel.data!.lastUpdate!.substring(
-                        0, orderDetailsModel.data!.lastUpdate!.indexOf('T')),
+                    DateFormat.yMMMd().format(
+                      DateTime.parse(
+                        orderDetailsModel.data!.lastUpdate.toString(),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -146,8 +165,11 @@ class Details extends StatelessWidget {
                 child: ListTile(
                   title: const Text("Order date"),
                   subtitle: Text(
-                    orderDetailsModel.data!.dateOrder!.substring(
-                        0, orderDetailsModel.data!.dateOrder!.indexOf('T')),
+                    DateFormat.yMMMd().format(
+                      DateTime.parse(
+                        orderDetailsModel.data!.lastUpdate.toString(),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -158,17 +180,29 @@ class Details extends StatelessWidget {
 
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
-            children: const [
+            children: [
               Expanded(
                 child: ListTile(
-                  title: Text("Event from time"),
-                  subtitle: Text("12:00 am"),
+                  title: const Text("Event from time"),
+                  subtitle: Text(
+                    DateFormat.jm().format(
+                      DateFormat("hh:mm:ss").parse(
+                        orderDetailsModel.data!.events![0].fromTime.toString(),
+                      ),
+                    ),
+                  ),
                 ),
               ),
               Expanded(
                 child: ListTile(
-                  title: Text("Event to time"),
-                  subtitle: Text("10:00 pm"),
+                  title: const Text("Event to time"),
+                  subtitle: Text(
+                    DateFormat.jm().format(
+                      DateFormat("hh:mm:ss").parse(
+                        orderDetailsModel.data!.events![0].toTime.toString(),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -259,9 +293,18 @@ class Details extends StatelessWidget {
             width: double.infinity,
             child: Padding(
               padding: const EdgeInsets.all(12.0),
-              child: ElevatedButton(
-                onPressed: () {},
-                child: const Text("Edit"),
+              child: Consumer<CreateOrderProvider>(
+                builder: (context, createOrderProvider, child) =>
+                    ElevatedButton(
+                  onPressed: () {
+                    createOrderProvider.setedit(true);
+                    createOrderProvider.editOrder(orderDetailsModel);
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const CreateOrder(),
+                    ));
+                  },
+                  child: const Text("Edit"),
+                ),
               ),
             ),
           )

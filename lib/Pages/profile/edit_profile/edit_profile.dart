@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:yaqoob_test_project/api/api_service.dart';
 import '../../../Models/profile_model.dart';
 import '../../../const.dart';
+import 'dart:io';
 
 class EditProfile extends StatefulWidget {
   final ProfileModel profileModel;
@@ -16,7 +20,7 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController userName = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController phone = TextEditingController();
-
+  bool isloading = false;
   @override
   void initState() {
     firstName.text = widget.profileModel.data!.firstName.toString();
@@ -37,6 +41,22 @@ class _EditProfileState extends State<EditProfile> {
     super.dispose();
   }
 
+  File? imageFile;
+
+  /// Get from gallery
+  _getFromGallery() async {
+    XFile? pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1800,
+      maxHeight: 1800,
+    );
+    if (pickedFile != null) {
+      setState(() {
+        imageFile = File(pickedFile.path);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,27 +71,49 @@ class _EditProfileState extends State<EditProfile> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 2,
-                      color: kborderColor,
+                Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 2,
+                          color: kborderColor,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          margin: const EdgeInsets.all(6),
+                          height: 70,
+                          width: 70,
+                          child: imageFile == null
+                              ? widget.profileModel.data!.profilePic!.isEmpty
+                                  ? Image.asset(noImage)
+                                  : Image.network(
+                                      widget.profileModel.data!.profilePic
+                                          .toString(),
+                                    )
+                              : Image.file(
+                                  imageFile!,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Container(
-                      margin: const EdgeInsets.all(6),
-                      height: 70,
-                      width: 70,
-                      child: widget.profileModel.data!.profilePic!.isEmpty
-                          ? Image.asset(noImage)
-                          : Image.network(
-                              widget.profileModel.data!.profilePic.toString(),
-                            ),
+                    GestureDetector(
+                      onTap: () {
+                        _getFromGallery();
+                      },
+                      child: CircleAvatar(
+                        radius: 14,
+                        backgroundColor: kpColor,
+                        child: SvgPicture.asset("assets/icons/edit-2.svg"),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 20),
+                  ],
                 ),
               ],
             ),
@@ -100,18 +142,41 @@ class _EditProfileState extends State<EditProfile> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
+                      setState(() {
+                        isloading = true;
+                      });
                       APIService apiService = APIService();
-                      apiService.updateProfile(ProfileModel(
-                        data: Data(
-                          emailId: email.text,
-                          firstName: firstName.text,
-                          lastName: lastName.text,
-                          phone: phone.text,
-                          userName: userName.text,
+                      apiService
+                          .updateProfile(
+                        profileModel: ProfileModel(
+                          data: Data(
+                            emailId: email.text,
+                            firstName: firstName.text,
+                            lastName: lastName.text,
+                            phone: phone.text,
+                            userName: userName.text,
+                          ),
                         ),
-                      ));
+                        image: imageFile,
+                      )
+                          .then(
+                        (value) {
+                          setState(() {
+                            isloading = false;
+                          });
+                          if (value.requestResponse == false) {
+                            Fluttertoast.showToast(msg: value.messages![0]);
+                          } else {
+                            Fluttertoast.showToast(msg: value.messages![0]);
+                          }
+                        },
+                      );
                     },
-                    child: const Text("Save"),
+                    child: isloading
+                        ? const CircularProgressIndicator(
+                            color: kwhiteColor,
+                          )
+                        : const Text("Save"),
                   ),
                 ),
                 const SizedBox(width: 20),

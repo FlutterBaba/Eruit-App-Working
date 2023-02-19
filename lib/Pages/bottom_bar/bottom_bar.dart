@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:yaqoob_test_project/Pages/order/order_list_page/order_list_page.dart';
 
 import '../../const.dart';
+import '../about/menu_page.dart';
 import '../home/home_page.dart';
 import '../profile/my_profile/my_profile.dart';
 
@@ -20,7 +21,7 @@ class _BottomBarState extends State<BottomBar> {
     const CalendarPage(),
     const OrderListPage(),
     const MyProfile(),
-    const Text("data"),
+    const MoreMenuPage(),
   ];
 
   void _onItemTapped(int index) {

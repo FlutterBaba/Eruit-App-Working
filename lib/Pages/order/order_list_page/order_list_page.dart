@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:yaqoob_test_project/Pages/order_filter_page/order_filter_page.dart';
-import 'package:yaqoob_test_project/Pages/order_list_page/widgets/float_action_button.dart';
-import 'package:yaqoob_test_project/Pages/order_list_page/widgets/single_order.dart';
 import 'package:yaqoob_test_project/provider/order_provider/order_provider.dart';
-import '../../Models/get_order_model.dart';
-import '../../api/api_service.dart';
-import '../../const.dart';
+import '../../../Models/get_order_model.dart';
+import '../../../api/api_service.dart';
+import '../../../const.dart';
 import 'widgets/filtter_order.dart';
+import 'widgets/float_action_button.dart';
+import 'widgets/single_order.dart';
 
 Map<String, dynamic> filterOrder = {
   // "sortOrder": "desc",
@@ -36,7 +36,12 @@ class _OrderListPageState extends State<OrderListPage> {
 
     OrderProvider orderProvider =
         Provider.of<OrderProvider>(context, listen: false);
+    orderProvider.getMenu();
+    orderProvider.getServer();
     orderProvider.getHall();
+    orderProvider.getTerms();
+    orderProvider.getAgents();
+    orderProvider.getEvvents();
     orderProvider.getOrderStatus();
     scrollController.addListener(callBackScrollListener);
   }
@@ -152,7 +157,6 @@ class BuildOrder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     OrderProvider provider = Provider.of<OrderProvider>(context);
-
     return ListView.builder(
       controller: controller,
       physics: const BouncingScrollPhysics(),

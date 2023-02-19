@@ -1,21 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import 'package:yaqoob_test_project/const.dart';
-import '../../Models/quick_select_model.dart';
+import 'package:yaqoob_test_project/provider/order_provider/create_order_provider.dart';
 import '../../api/api_service.dart';
+import '../../provider/order_provider/order_provider.dart';
 import '../../widgets/my_drop_down.dart';
 import 'widgets/bottom_button.dart';
-
-int hall = 0;
-int menu = 0;
-int sever = 0;
-DateTime date = DateTime.now();
-DateTime todate = DateTime.now();
-DateTime time = DateTime.now();
-DateTime totime = DateTime.now();
-TextEditingController hebdate = TextEditingController();
-TextEditingController dayevent = TextEditingController();
 
 class EventsPage extends StatefulWidget {
   const EventsPage({super.key});
@@ -26,32 +18,31 @@ class EventsPage extends StatefulWidget {
 
 class _EventsPageState extends State<EventsPage> {
   APIService? apiService;
+  TextEditingController hebdate = TextEditingController();
+  TextEditingController dayevent = TextEditingController();
 
   @override
   void initState() {
     apiService = APIService();
-    getMenu();
-    getServer();
     super.initState();
   }
 
-  List<Datum> menuList = [];
-  List<Datum> serverList = [];
-
-  getMenu() async {
-    QuickSelectModel value = await apiService!.getMainTabel(2);
-    setState(() {
-      menuList = value.data;
-    });
-    menuList.sort((a, b) => a.value.compareTo(b.value));
+  @override
+  void dispose() {
+    hebdate.dispose();
+    dayevent.dispose();
+    super.dispose();
   }
 
-  getServer() async {
-    QuickSelectModel value = await apiService!.getMainTabel(9);
-    setState(() {
-      serverList = value.data;
-    });
-    serverList.sort((a, b) => a.value.compareTo(b.value));
+  CreateOrderProvider? _appProvider;
+
+  @override
+  void didChangeDependencies() {
+    _appProvider = Provider.of<CreateOrderProvider>(context, listen: false);
+    _appProvider!.hall = null;
+    _appProvider!.menu = null;
+    _appProvider!.servers = null;
+    super.didChangeDependencies();
   }
 
   // This function displays a CupertinoModalPopup with a reasonable fixed height
@@ -87,211 +78,217 @@ class _EventsPageState extends State<EventsPage> {
         elevation: 1,
       ),
       body: orderProvider.getHallList.isEmpty ||
-              menuList.isEmpty ||
-              serverList.isEmpty
+              orderProvider.getHallList.isEmpty ||
+              orderProvider.getHallList.isEmpty
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: OverflowBar(
-                  overflowSpacing: 20,
-                  children: [
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: const Text(
-                        "Events",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      trailing: SizedBox(
-                        width: 100,
-                        height: 40,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          child: const Text("Items"),
+          : Consumer<CreateOrderProvider>(
+              builder: (context, createOrderProvider, child) =>
+                  SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: OverflowBar(
+                    overflowSpacing: 20,
+                    children: [
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Text(
+                          "Events",
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                      ),
-                    ),
-                    MyDropDown(
-                      items: orderProvider.getHallList,
-                      labelText: "Hall",
-                      onChanged: (item) {
-                        setState(() {
-                          hall = item!.value;
-                        });
-                      },
-                    ),
-                    MyDropDown(
-                      items: menuList,
-                      labelText: "Menu",
-                      onChanged: (item) {
-                        setState(() {
-                          menu = item!.value;
-                        });
-                      },
-                    ),
-                    MyDropDown(
-                      items: serverList,
-                      labelText: "Servers",
-                      onChanged: (item) {
-                        setState(() {
-                          sever = item!.value;
-                        });
-                      },
-                    ),
-                    TextField(
-                      readOnly: true,
-                      style: const TextStyle(color: klightTextColor),
-                      controller: TextEditingController(
-                        text: "${date.month}-${date.day}-${date.year}",
-                      ),
-                      decoration: const InputDecoration(
-                        labelText: "From Date",
-                        suffixIcon: Icon(Icons.date_range),
-                        hintStyle: TextStyle(
-                          color: klightTextColor,
-                        ),
-                      ),
-                      onTap: () {
-                        _showDialog(
-                          CupertinoDatePicker(
-                            initialDateTime: date,
-                            mode: CupertinoDatePickerMode.date,
-                            use24hFormat: true,
-                            // This is called when the user changes the date.
-                            onDateTimeChanged: (DateTime newDate) {
-                              setState(
-                                () {
-                                  date = newDate;
-                                  apiService!
-                                      .getHebdateDayEventByDate(
-                                          "${date.month}-${date.day}-${date.year}")
-                                      .then(
-                                    (value) {
-                                      if (value.requestResponse == false) {
-                                        Fluttertoast.showToast(
-                                            msg: value.messages![0]);
-                                      } else {
-                                        hebdate.text =
-                                            value.data!.hebdate.toString();
-                                        dayevent.text =
-                                            value.data!.dayEvent.toString();
-                                      }
-                                    },
-                                  );
-                                },
-                              );
-                            },
+                        trailing: SizedBox(
+                          width: 100,
+                          height: 40,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            child: const Text("Items"),
                           ),
-                        );
-                      },
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            readOnly: true,
-                            style: const TextStyle(color: klightTextColor),
-                            controller: TextEditingController(
-                              text: "${time.hour}:${time.minute}",
+                        ),
+                      ),
+                      MyDropDown(
+                        items: orderProvider.getHallList,
+                        labelText: "Hall",
+                        onChanged: createOrderProvider.setHall,
+                      ),
+                      MyDropDown(
+                        items: orderProvider.getMenuList,
+                        labelText: "Menu",
+                        onChanged: createOrderProvider.setMenu,
+                      ),
+                      MyDropDown(
+                        items: orderProvider.getServerList,
+                        labelText: "Servers",
+                        onChanged: createOrderProvider.setServers,
+                      ),
+                      TextField(
+                        readOnly: true,
+                        style: const TextStyle(color: klightTextColor),
+                        controller: TextEditingController(
+                          text: createOrderProvider.formDate == null
+                              ? null
+                              : "${createOrderProvider.formDate!.month}-${createOrderProvider.formDate!.day}-${createOrderProvider.formDate!.year}",
+                        ),
+                        decoration: const InputDecoration(
+                          labelText: "From Date",
+                          suffixIcon: Icon(Icons.date_range),
+                          hintStyle: TextStyle(
+                            color: klightTextColor,
+                          ),
+                        ),
+                        onTap: () {
+                          _showDialog(
+                            CupertinoDatePicker(
+                              initialDateTime: createOrderProvider.formDate,
+                              mode: CupertinoDatePickerMode.date,
+                              use24hFormat: true,
+                              // This is called when the user changes the date.
+                              onDateTimeChanged: (DateTime newDate) {
+                                setState(
+                                  () {
+                                    createOrderProvider.formDate = newDate;
+                                    apiService!
+                                        .getHebdateDayEventByDate(
+                                            "${createOrderProvider.formDate!.month}-${createOrderProvider.formDate!.day}-${createOrderProvider.formDate!.year}")
+                                        .then(
+                                      (value) {
+                                        if (value.requestResponse == false) {
+                                          Fluttertoast.showToast(
+                                              msg: value.messages![0]);
+                                        } else {
+                                          hebdate.text =
+                                              value.data!.hebdate.toString();
+                                          dayevent.text =
+                                              value.data!.dayEvent.toString();
+                                        }
+                                      },
+                                    );
+                                  },
+                                );
+                              },
                             ),
-                            decoration: const InputDecoration(
-                              labelText: "From Time",
-                              suffixIcon: Icon(Icons.access_time_outlined),
-                              hintStyle: TextStyle(
-                                color: klightTextColor,
+                          );
+                        },
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              readOnly: true,
+                              style: const TextStyle(color: klightTextColor),
+                              controller: TextEditingController(
+                                text: createOrderProvider.fromTime == null
+                                    ? null
+                                    : "${createOrderProvider.fromTime!.hour}:${createOrderProvider.fromTime!.minute}",
                               ),
-                            ),
-                            onTap: () {
-                              _showDialog(
-                                CupertinoDatePicker(
-                                  initialDateTime: time,
-                                  mode: CupertinoDatePickerMode.time,
-                                  use24hFormat: true,
+                              decoration: const InputDecoration(
+                                labelText: "From Time",
+                                suffixIcon: Icon(Icons.access_time_outlined),
+                                hintStyle: TextStyle(
+                                  color: klightTextColor,
+                                ),
+                              ),
+                              onTap: () {
+                                _showDialog(
+                                  CupertinoDatePicker(
+                                    initialDateTime:
+                                        createOrderProvider.fromTime,
+                                    mode: CupertinoDatePickerMode.time,
+                                    use24hFormat: true,
 
-                                  // This is called when the user changes the time.
-                                  onDateTimeChanged: (DateTime newTime) {
-                                    setState(() => time = newTime);
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: TextField(
-                            readOnly: true,
-                            style: const TextStyle(color: klightTextColor),
-                            controller: TextEditingController(
-                              text: "${totime.hour}:${totime.minute}",
+                                    // This is called when the user changes the time.
+                                    onDateTimeChanged: (DateTime newTime) {
+                                      setState(() => createOrderProvider
+                                          .fromTime = newTime);
+                                    },
+                                  ),
+                                );
+                              },
                             ),
-                            decoration: const InputDecoration(
-                              labelText: "To Time",
-                              suffixIcon: Icon(Icons.access_time_outlined),
-                              hintStyle: TextStyle(
-                                color: klightTextColor,
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: TextField(
+                              readOnly: true,
+                              style: const TextStyle(color: klightTextColor),
+                              controller: TextEditingController(
+                                text: createOrderProvider.toTime == null
+                                    ? null
+                                    : "${createOrderProvider.toTime!.hour}:${createOrderProvider.toTime!.minute}",
                               ),
-                            ),
-                            onTap: () {
-                              _showDialog(
-                                CupertinoDatePicker(
-                                  initialDateTime: totime,
-                                  mode: CupertinoDatePickerMode.time,
-                                  use24hFormat: true,
-                                  // This is called when the user changes the time.
-                                  onDateTimeChanged: (DateTime newTime) {
-                                    setState(() => totime = newTime);
-                                  },
+                              decoration: const InputDecoration(
+                                labelText: "To Time",
+                                suffixIcon: Icon(Icons.access_time_outlined),
+                                hintStyle: TextStyle(
+                                  color: klightTextColor,
                                 ),
-                              );
-                            },
+                              ),
+                              onTap: () {
+                                _showDialog(
+                                  CupertinoDatePicker(
+                                    initialDateTime: createOrderProvider.toTime,
+                                    mode: CupertinoDatePickerMode.time,
+                                    use24hFormat: true,
+                                    // This is called when the user changes the time.
+                                    onDateTimeChanged: (DateTime newTime) {
+                                      setState(() =>
+                                          createOrderProvider.toTime = newTime);
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      TextField(
+                        readOnly: true,
+                        style: const TextStyle(color: klightTextColor),
+                        controller: TextEditingController(
+                          text: createOrderProvider.toDate == null
+                              ? null
+                              : "${createOrderProvider.toDate!.month}-${createOrderProvider.toDate!.day}-${createOrderProvider.toDate!.year}",
+                        ),
+                        decoration: const InputDecoration(
+                          labelText: "To Date",
+                          suffixIcon: Icon(Icons.date_range),
+                          hintStyle: TextStyle(
+                            color: klightTextColor,
                           ),
                         ),
-                      ],
-                    ),
-                    TextField(
-                      readOnly: true,
-                      style: const TextStyle(color: klightTextColor),
-                      controller: TextEditingController(
-                        text: "${todate.month}-${todate.day}-${todate.year}",
+                        onTap: () {
+                          _showDialog(
+                            CupertinoDatePicker(
+                              initialDateTime: createOrderProvider.toDate,
+                              mode: CupertinoDatePickerMode.date,
+                              use24hFormat: true,
+                              // This is called when the user changes the date.
+                              onDateTimeChanged: (DateTime newDate) {
+                                setState(
+                                  () => createOrderProvider.toDate = newDate,
+                                );
+                              },
+                            ),
+                          );
+                        },
                       ),
-                      decoration: const InputDecoration(
-                        labelText: "To Date",
-                        suffixIcon: Icon(Icons.date_range),
-                        hintStyle: TextStyle(
-                          color: klightTextColor,
+                      TextField(
+                        onChanged: createOrderProvider.setHebDate,
+                        style: const TextStyle(color: klightTextColor),
+                        controller: hebdate,
+                        decoration: const InputDecoration(
+                          labelText: "Hebdate",
                         ),
                       ),
-                      onTap: () {
-                        _showDialog(
-                          CupertinoDatePicker(
-                            initialDateTime: todate,
-                            mode: CupertinoDatePickerMode.date,
-                            use24hFormat: true,
-                            // This is called when the user changes the date.
-                            onDateTimeChanged: (DateTime newDate) {
-                              setState(() => todate = newDate);
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                    TextField(
-                      style: const TextStyle(color: klightTextColor),
-                      controller: hebdate,
-                      decoration: const InputDecoration(
-                        labelText: "Hebdate",
+                      TextField(
+                        onChanged: createOrderProvider.setDayEvent,
+                        style: const TextStyle(color: klightTextColor),
+                        controller: dayevent,
+                        decoration: const InputDecoration(
+                          labelText: "Day Event",
+                        ),
                       ),
-                    ),
-                    TextField(
-                      style: const TextStyle(color: klightTextColor),
-                      controller: dayevent,
-                      decoration: const InputDecoration(
-                        labelText: "Day Event",
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

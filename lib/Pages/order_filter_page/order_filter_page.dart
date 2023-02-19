@@ -6,7 +6,7 @@ import 'package:yaqoob_test_project/provider/order_provider/order_provider.dart'
 import '../../../Models/quick_select_model.dart';
 import '../../../const.dart';
 import '../../../widgets/my_drop_down.dart';
-import '../order_list_page/order_list_page.dart';
+import '../order/order_list_page/order_list_page.dart';
 
 enum SingingCharacter { eventdate, orderdate, lastupdate }
 
